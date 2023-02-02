@@ -104,7 +104,11 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
         final snackBar =
             createdSnackBar(message: 'Todo Updated', color: Colors.green);
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        Navigator.pushNamed(context, AppRoute.homeScreen);
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoute.homeScreen,
+          (route) => false,
+        );
       }
     } else {
       if (_globalKey.currentState?.validate() == true) {
@@ -115,7 +119,11 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
             createdSnackBar(message: 'Todo created', color: Colors.green);
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-        Navigator.pushNamed(context, AppRoute.homeScreen);
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoute.homeScreen,
+          (route) => false,
+        );
       }
     }
   }
