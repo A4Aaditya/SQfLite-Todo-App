@@ -77,29 +77,36 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: onPressed,
-              child: widget.isEditMode
-                  ? const Text('Update')
-                  : const Text('Submit'),
-            ),
+            BlocBuilder<TodoBloc, TodoState>(builder: (context, state) {
+              if (state is TodoLoading) {
+                return const Center(
+                  child: CircularProgressIndicator.adaptive(),
+                );
+              }
+              return ElevatedButton(
+                onPressed: _handleSubmit,
+                child: widget.isEditMode
+                    ? const Text('Update')
+                    : const Text('Submit'),
+              );
+            }),
           ],
         ),
       ),
     );
   }
 
-  Future<void> onPressed() async {
+  Future<void> _handleSubmit() async {
     final title = titleController.text;
     final description = descriptionController.text;
     final values = TodoModel.toMap(title: title, descriptions: description);
 
     if (_globalKey.currentState?.validate() != true) return;
 
-    final bloc = context.read<DatabaseBloc>();
+    final bloc = context.read<TodoBloc>();
 
     if (widget.isEditMode) {
-      final event = DatabaseUpdateEvent(id: widget.id!, values: values);
+      final event = TodoUpdateEvent(id: widget.id!, values: values);
 
       bloc.add(event);
 
@@ -110,7 +117,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
-      final event = DatabaseInserEvent(values: values);
+      final event = TodoInsertEvent(values: values);
 
       bloc.add(event);
 

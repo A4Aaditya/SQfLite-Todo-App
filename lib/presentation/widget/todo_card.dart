@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app_sql/models/todo_model.dart';
@@ -101,10 +99,10 @@ class _TodoCardState extends State<TodoCard> {
       );
       Navigator.push(context, route);
 
-      log('edit mode');
+      // log('edit mode');
     } else if (value == 'Delete') {
-      final event = DatabaseDeleteEvent(id: id);
-      final bloc = context.read<DatabaseBloc>();
+      final event = TodoDeleteEvent(id: id);
+      final bloc = context.read<TodoBloc>();
       bloc.add(event);
       final snackBar = createdSnackBar(
         message: 'Todo deleted',

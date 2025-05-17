@@ -24,9 +24,9 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Todo'),
       ),
-      body: BlocConsumer<DatabaseBloc, DatabaseState>(
+      body: BlocConsumer<TodoBloc, TodoState>(
         listener: (context, state) {
-          if (state is DatabaseError) {
+          if (state is TodoError) {
             final snackBar = SnackBar(
               content: Text(
                 state.errorMessage,
@@ -37,9 +37,9 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
         builder: (context, state) {
-          if (state is DatabaseFetchSuccess) {
+          if (state is TodoFetchSuccess) {
             return TodoCard(datas: state.datas);
-          } else if (state is DatabaseLoading) {
+          } else if (state is TodoLoading) {
             return const Center(
               child: CircularProgressIndicator(),
             );
@@ -59,8 +59,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getSQLData() async {
-    final event = DatabaseFetchEvent();
-    final bloc = context.read<DatabaseBloc>();
+    final event = TodoFetchEvent();
+    final bloc = context.read<TodoBloc>();
     bloc.add(event);
   }
 }

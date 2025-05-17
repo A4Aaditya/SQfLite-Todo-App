@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app_sql/app_route.dart';
+import 'package:todo_app_sql/data/db/db_service.dart';
 import 'package:todo_app_sql/presentation/add_todo.dart';
 import 'package:todo_app_sql/presentation/bloc/database_bloc.dart';
 import 'package:todo_app_sql/presentation/home_screen.dart';
-import 'package:todo_app_sql/repository/database.dart';
+import 'package:todo_app_sql/repository/todo_repository.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -13,9 +14,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<DatabaseBloc>(
-          create: (context) => DatabaseBloc(
-            DataBaseRepository(),
+        BlocProvider<TodoBloc>(
+          create: (context) => TodoBloc(
+            todoRepository: TodoRepository(
+              dbService: DBService(),
+            ),
           ),
         )
       ],
