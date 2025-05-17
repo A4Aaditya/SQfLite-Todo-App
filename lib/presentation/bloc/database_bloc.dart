@@ -41,9 +41,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       final response = await todoRepository.insertTodo(values: event.values);
 
       if (response == 1) {
-        emit(TodoLoading());
-        final response = await todoRepository.getAllQuerry();
-        emit(TodoFetchSuccess(datas: response));
+        emit(TodoDataUpdatedState());
       }
     } catch (e) {
       emit(

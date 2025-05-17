@@ -34,6 +34,8 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: Colors.red,
             );
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          } else if (state is TodoDataUpdatedState) {
+            getSQLData();
           }
         },
         builder: (context, state) {
