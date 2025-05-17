@@ -1,22 +1,28 @@
 part of 'database_bloc.dart';
 
-abstract class DatabaseState {}
+abstract class TodoState {}
 
-class DatabaseInitial extends DatabaseState {}
+class TodoInitial extends TodoState {}
 
-class DatabaseLoading extends DatabaseState {}
+class TodoLoading extends TodoState {}
 
-class DatabaseError extends DatabaseState {
+class TodoError extends TodoState {
   final String errorMessage;
-  DatabaseError({
+  TodoError({
     required this.errorMessage,
   });
 }
 
-class DatabaseFetchSuccess extends DatabaseState {
+class TodoFetchSuccess extends TodoState {
   final List<TodoModel> datas;
 
-  DatabaseFetchSuccess({
+  TodoFetchSuccess({
     required this.datas,
   });
 }
+
+class TodoDataInsertedState extends TodoState {}
+
+class TodoDataUpdatedState extends TodoState {}
+
+class TodoDataDeletedState extends TodoState {}

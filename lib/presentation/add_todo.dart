@@ -48,6 +48,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
           children: [
             TextFormField(
               controller: titleController,
+              autofocus: true,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: (value) => validateField(
                   controller: titleController,

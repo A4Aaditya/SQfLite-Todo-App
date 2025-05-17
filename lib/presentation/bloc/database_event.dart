@@ -1,25 +1,25 @@
 part of 'database_bloc.dart';
 
-abstract class DatabaseEvent {}
+abstract class TodoEvent {}
 
-class DatabaseFetchEvent extends DatabaseEvent {}
+class TodoFetchEvent extends TodoEvent {}
 
-class DatabaseInserEvent extends DatabaseEvent {
+class TodoInsertEvent extends TodoEvent {
   final Map<String, dynamic> values;
-  DatabaseInserEvent({
+  TodoInsertEvent({
     required this.values,
   });
 }
 
-class DatabaseDeleteEvent extends DatabaseEvent {
+class TodoDeleteEvent extends TodoEvent {
   final int id;
-  DatabaseDeleteEvent({required this.id});
+  TodoDeleteEvent({required this.id});
 }
 
-class DatabaseUpdateEvent extends DatabaseEvent {
+class TodoUpdateEvent extends TodoEvent {
   final Map<String, dynamic> values;
   final int id;
-  DatabaseUpdateEvent({
+  TodoUpdateEvent({
     required this.id,
     required this.values,
   });
