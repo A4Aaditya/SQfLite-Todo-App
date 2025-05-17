@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app_sql/app_route.dart';
+import 'package:todo_app_sql/models/todo_model.dart';
 import 'package:todo_app_sql/presentation/bloc/database_bloc.dart';
 import 'package:todo_app_sql/utils.dart';
 
@@ -92,10 +93,8 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
   Future<void> onPressed() async {
     final title = titleController.text;
     final description = descriptionController.text;
-    final values = {
-      'title': title,
-      'description': description,
-    };
+    final values = TodoModel.toMap(title: title, descriptions: description);
+
     if (widget.isEditMode) {
       if (_globalKey.currentState?.validate() == true) {
         final event = DatabaseUpdateEvent(id: widget.id!, values: values);

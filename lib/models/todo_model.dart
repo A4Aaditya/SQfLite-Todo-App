@@ -16,4 +16,14 @@ class TodoModel {
       description: data['description'],
     );
   }
+
+  static Map<String, dynamic> toMap({
+    required String title,
+    required String descriptions,
+  }) {
+    return {
+      'title': title,
+      'description': descriptions,
+    };
+  }
 }
