@@ -26,13 +26,11 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   final _globalKey = GlobalKey<FormState>();
-  bool? isEditMode = false;
   @override
   void initState() {
     super.initState();
     titleController.text = widget.title ?? '';
     descriptionController.text = widget.description ?? '';
-    isEditMode = true;
   }
 
   @override
@@ -95,35 +93,38 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
     final description = descriptionController.text;
     final values = TodoModel.toMap(title: title, descriptions: description);
 
-    if (widget.isEditMode) {
-      if (_globalKey.currentState?.validate() == true) {
-        final event = DatabaseUpdateEvent(id: widget.id!, values: values);
-        final bloc = context.read<DatabaseBloc>();
-        bloc.add(event);
-        final snackBar =
-            createdSnackBar(message: 'Todo Updated', color: Colors.green);
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          AppRoute.homeScreen,
-          (route) => false,
-        );
-      }
-    } else {
-      if (_globalKey.currentState?.validate() == true) {
-        final event = DatabaseInserEvent(values: values);
-        final bloc = context.read<DatabaseBloc>();
-        bloc.add(event);
-        final snackBar =
-            createdSnackBar(message: 'Todo created', color: Colors.green);
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    if (_globalKey.currentState?.validate() != true) return;
 
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          AppRoute.homeScreen,
-          (route) => false,
-        );
-      }
+    final bloc = context.read<DatabaseBloc>();
+
+    if (widget.isEditMode) {
+      final event = DatabaseUpdateEvent(id: widget.id!, values: values);
+
+      bloc.add(event);
+
+      final snackBar = createdSnackBar(
+        message: 'Todo Updated',
+        color: Colors.green,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      final event = DatabaseInserEvent(values: values);
+
+      bloc.add(event);
+
+      final snackBar = createdSnackBar(
+        message: 'Todo created',
+        color: Colors.green,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
+
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      AppRoute.homeScreen,
+      (route) => false,
+    );
   }
 }
