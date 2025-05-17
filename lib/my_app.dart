@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app_sql/app_route.dart';
 import 'package:todo_app_sql/data/db/db_service.dart';
 import 'package:todo_app_sql/presentation/add_todo.dart';
-import 'package:todo_app_sql/presentation/bloc/database_bloc.dart';
+import 'package:todo_app_sql/presentation/bloc/todo_bloc.dart';
 import 'package:todo_app_sql/presentation/home_screen.dart';
 import 'package:todo_app_sql/repository/todo_repository.dart';
 

@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app_sql/models/todo_model.dart';
 import 'package:todo_app_sql/repository/todo_repository.dart';
 
-part 'database_event.dart';
-part 'database_state.dart';
+part 'todo_event.dart';
+part 'todo_state.dart';
 
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
   TodoRepository todoRepository;

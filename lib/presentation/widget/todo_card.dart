@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app_sql/models/todo_model.dart';
 import 'package:todo_app_sql/presentation/add_todo.dart';
-import 'package:todo_app_sql/presentation/bloc/database_bloc.dart';
+import 'package:todo_app_sql/presentation/bloc/todo_bloc.dart';
 import 'package:todo_app_sql/utils.dart';
 
 class TodoCard extends StatefulWidget {
