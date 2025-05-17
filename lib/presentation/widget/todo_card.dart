@@ -26,6 +26,17 @@ class _TodoCardState extends State<TodoCard> {
   ];
   @override
   Widget build(BuildContext context) {
+    if (widget.datas.isEmpty) {
+      return const Center(
+        child: Text(
+          "No Todos",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    }
     return ListView.builder(
       itemCount: widget.datas.length,
       itemBuilder: (context, index) {

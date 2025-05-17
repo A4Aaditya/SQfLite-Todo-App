@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Screen'),
+        title: const Text('Todo'),
       ),
       body: BlocConsumer<DatabaseBloc, DatabaseState>(
         listener: (context, state) {
