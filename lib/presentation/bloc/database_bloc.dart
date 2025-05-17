@@ -60,9 +60,10 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     try {
       final response = await todoRepository.deleteTodoById(id: event.id);
       if (response == 1) {
-        emit(TodoLoading());
-        final response = await todoRepository.getAllQuerry();
-        emit(TodoFetchSuccess(datas: response));
+        emit(TodoDataDeletedState());
+        // emit(TodoLoading());
+        // final response = await todoRepository.getAllQuerry();
+        // emit(TodoFetchSuccess(datas: response));
       }
     } catch (e) {
       emit(

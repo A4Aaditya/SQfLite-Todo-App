@@ -36,6 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           } else if (state is TodoDataUpdatedState) {
             getSQLData();
+          } else if (state is TodoDataDeletedState) {
+            getSQLData();
           }
         },
         builder: (context, state) {
