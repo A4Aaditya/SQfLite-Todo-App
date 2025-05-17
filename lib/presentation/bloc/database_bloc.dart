@@ -41,14 +41,10 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       final response = await todoRepository.insertTodo(values: event.values);
 
       if (response == 1) {
-        emit(TodoDataUpdatedState());
+        emit(TodoDataInsertedState());
       }
     } catch (e) {
-      emit(
-        TodoError(
-          errorMessage: e.toString(),
-        ),
-      );
+      emit(TodoError(errorMessage: e.toString()));
     }
   }
 
@@ -61,9 +57,6 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       final response = await todoRepository.deleteTodoById(id: event.id);
       if (response == 1) {
         emit(TodoDataDeletedState());
-        // emit(TodoLoading());
-        // final response = await todoRepository.getAllQuerry();
-        // emit(TodoFetchSuccess(datas: response));
       }
     } catch (e) {
       emit(
@@ -85,16 +78,10 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
         values: event.values,
       );
       if (response == 1) {
-        emit(TodoLoading());
-        final response = await todoRepository.getAllQuerry();
-        emit(TodoFetchSuccess(datas: response));
+        emit(TodoDataUpdatedState());
       }
     } catch (e) {
-      emit(
-        TodoError(
-          errorMessage: e.toString(),
-        ),
-      );
+      emit(TodoError(errorMessage: e.toString()));
     }
   }
 }
