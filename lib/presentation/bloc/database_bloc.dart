@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app_sql/models/todo_model.dart';
 import 'package:todo_app_sql/repository/todo_repository.dart';
@@ -8,10 +7,9 @@ part 'database_event.dart';
 part 'database_state.dart';
 
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
-  // DataBaseRepository database;
   TodoRepository todoRepository;
+
   TodoBloc({
-    // required this.database,
     required this.todoRepository,
   }) : super(TodoInitial()) {
     on<TodoFetchEvent>(_fetchData);
@@ -26,7 +24,6 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   ) async {
     emit(TodoLoading());
     try {
-      // final response = await database.getDatabaseData();
       final response = await todoRepository.getAllQuerry();
 
       emit(TodoFetchSuccess(datas: response));
@@ -41,12 +38,10 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   ) async {
     emit(TodoLoading());
     try {
-      // final response = await database.insertToDatabase(event.values);
       final response = await todoRepository.insertTodo(values: event.values);
 
-      if (!response.isNaN) {
+      if (response == 1) {
         emit(TodoLoading());
-        // final response = await database.getDatabaseData();
         final response = await todoRepository.getAllQuerry();
         emit(TodoFetchSuccess(datas: response));
       }
@@ -65,11 +60,9 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   ) async {
     emit(TodoLoading());
     try {
-      // final response = await database.deleteDataById(event.id);
       final response = await todoRepository.deleteTodoById(id: event.id);
-      if (!response.isNaN) {
+      if (response == 1) {
         emit(TodoLoading());
-        // final response = await database.getDatabaseData();
         final response = await todoRepository.getAllQuerry();
         emit(TodoFetchSuccess(datas: response));
       }
@@ -88,14 +81,12 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   ) async {
     emit(TodoLoading());
     try {
-      // final response = await database.updateDataById(event.values, event.id);
       final response = await todoRepository.updateTodoById(
         id: event.id,
         values: event.values,
       );
-      if (response != null) {
+      if (response == 1) {
         emit(TodoLoading());
-        // final response = await database.getDatabaseData();
         final response = await todoRepository.getAllQuerry();
         emit(TodoFetchSuccess(datas: response));
       }
