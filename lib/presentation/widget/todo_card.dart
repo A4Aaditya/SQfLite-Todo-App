@@ -1,10 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app_sql/models/todo_model.dart';
 import 'package:todo_app_sql/presentation/add_todo.dart';
-import 'package:todo_app_sql/presentation/bloc/database_bloc.dart';
+import 'package:todo_app_sql/presentation/bloc/todo_bloc.dart';
 import 'package:todo_app_sql/utils.dart';
 
 class TodoCard extends StatefulWidget {
@@ -26,6 +24,17 @@ class _TodoCardState extends State<TodoCard> {
   ];
   @override
   Widget build(BuildContext context) {
+    if (widget.datas.isEmpty) {
+      return const Center(
+        child: Text(
+          "No Todos",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    }
     return ListView.builder(
       itemCount: widget.datas.length,
       itemBuilder: (context, index) {
@@ -90,10 +99,10 @@ class _TodoCardState extends State<TodoCard> {
       );
       Navigator.push(context, route);
 
-      log('edit mode');
+      // log('edit mode');
     } else if (value == 'Delete') {
-      final event = DatabaseDeleteEvent(id: id);
-      final bloc = context.read<DatabaseBloc>();
+      final event = TodoDeleteEvent(id: id);
+      final bloc = context.read<TodoBloc>();
       bloc.add(event);
       final snackBar = createdSnackBar(
         message: 'Todo deleted',

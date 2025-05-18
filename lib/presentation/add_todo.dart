@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app_sql/app_route.dart';
-import 'package:todo_app_sql/presentation/bloc/database_bloc.dart';
+import 'package:todo_app_sql/models/todo_model.dart';
+import 'package:todo_app_sql/presentation/bloc/todo_bloc.dart';
 import 'package:todo_app_sql/utils.dart';
 
 class AddTodoScreen extends StatefulWidget {
@@ -25,13 +26,11 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   final _globalKey = GlobalKey<FormState>();
-  bool? isEditMode = false;
   @override
   void initState() {
     super.initState();
     titleController.text = widget.title ?? '';
     descriptionController.text = widget.description ?? '';
-    isEditMode = true;
   }
 
   @override
@@ -49,6 +48,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
           children: [
             TextFormField(
               controller: titleController,
+              autofocus: true,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: (value) => validateField(
                   controller: titleController,
@@ -77,54 +77,62 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: onPressed,
-              child: widget.isEditMode
-                  ? const Text('Update')
-                  : const Text('Submit'),
-            ),
+            BlocBuilder<TodoBloc, TodoState>(builder: (context, state) {
+              if (state is TodoLoading) {
+                return const Center(
+                  child: CircularProgressIndicator.adaptive(),
+                );
+              }
+              return ElevatedButton(
+                onPressed: _handleSubmit,
+                child: widget.isEditMode
+                    ? const Text('Update')
+                    : const Text('Submit'),
+              );
+            }),
           ],
         ),
       ),
     );
   }
 
-  Future<void> onPressed() async {
+  Future<void> _handleSubmit() async {
     final title = titleController.text;
     final description = descriptionController.text;
-    final values = {
-      'title': title,
-      'description': description,
-    };
-    if (widget.isEditMode) {
-      if (_globalKey.currentState?.validate() == true) {
-        final event = DatabaseUpdateEvent(id: widget.id!, values: values);
-        final bloc = context.read<DatabaseBloc>();
-        bloc.add(event);
-        final snackBar =
-            createdSnackBar(message: 'Todo Updated', color: Colors.green);
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          AppRoute.homeScreen,
-          (route) => false,
-        );
-      }
-    } else {
-      if (_globalKey.currentState?.validate() == true) {
-        final event = DatabaseInserEvent(values: values);
-        final bloc = context.read<DatabaseBloc>();
-        bloc.add(event);
-        final snackBar =
-            createdSnackBar(message: 'Todo created', color: Colors.green);
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    final values = TodoModel.toMap(title: title, descriptions: description);
 
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          AppRoute.homeScreen,
-          (route) => false,
-        );
-      }
+    if (_globalKey.currentState?.validate() != true) return;
+
+    final bloc = context.read<TodoBloc>();
+
+    if (widget.isEditMode) {
+      final event = TodoUpdateEvent(id: widget.id!, values: values);
+
+      bloc.add(event);
+
+      final snackBar = createdSnackBar(
+        message: 'Todo Updated',
+        color: Colors.green,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      final event = TodoInsertEvent(values: values);
+
+      bloc.add(event);
+
+      final snackBar = createdSnackBar(
+        message: 'Todo created',
+        color: Colors.green,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
+
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      AppRoute.homeScreen,
+      (route) => false,
+    );
   }
 }

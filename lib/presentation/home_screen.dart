@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app_sql/app_route.dart';
-import 'package:todo_app_sql/presentation/bloc/database_bloc.dart';
+import 'package:todo_app_sql/presentation/bloc/todo_bloc.dart';
 import 'package:todo_app_sql/presentation/widget/todo_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,11 +22,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Screen'),
+        title: const Text('Todo'),
       ),
-      body: BlocConsumer<DatabaseBloc, DatabaseState>(
+      body: BlocConsumer<TodoBloc, TodoState>(
         listener: (context, state) {
-          if (state is DatabaseError) {
+          if (state is TodoError) {
             final snackBar = SnackBar(
               content: Text(
                 state.errorMessage,
@@ -34,12 +34,16 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: Colors.red,
             );
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          } else if (state is TodoDataInsertedState ||
+              state is TodoDataDeletedState ||
+              state is TodoDataUpdatedState) {
+            getSQLData();
           }
         },
         builder: (context, state) {
-          if (state is DatabaseFetchSuccess) {
+          if (state is TodoFetchSuccess) {
             return TodoCard(datas: state.datas);
-          } else if (state is DatabaseLoading) {
+          } else if (state is TodoLoading) {
             return const Center(
               child: CircularProgressIndicator(),
             );
@@ -59,8 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getSQLData() async {
-    final event = DatabaseFetchEvent();
-    final bloc = context.read<DatabaseBloc>();
+    final event = TodoFetchEvent();
+    final bloc = context.read<TodoBloc>();
     bloc.add(event);
   }
 }
