@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app_sql/app_route.dart';
 import 'package:todo_app_sql/models/todo_model.dart';
-import 'package:todo_app_sql/presentation/bloc/todo_bloc.dart';
+import 'package:todo_app_sql/presentation/todo/bloc/todo_bloc.dart';
 import 'package:todo_app_sql/utils.dart';
 
 class AddTodoScreen extends StatefulWidget {
