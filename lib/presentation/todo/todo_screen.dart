@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app_sql/app_route.dart';
 import 'package:todo_app_sql/presentation/todo/bloc/todo_bloc.dart';
 import 'package:todo_app_sql/presentation/todo/widget/todo_card.dart';
+import 'package:todo_app_sql/presentation/widget/loading_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,40 +26,74 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Todo'),
       ),
       body: BlocConsumer<TodoBloc, TodoState>(
-        listener: (context, state) {
-          if (state is TodoError) {
-            final snackBar = SnackBar(
-              content: Text(
-                state.errorMessage,
-              ),
-              backgroundColor: Colors.red,
-            );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          } else if (state is TodoDataInsertedState ||
-              state is TodoDataDeletedState ||
-              state is TodoDataUpdatedState) {
-            getSQLData();
+        listener: (cxt, state) {
+          final status = state.status;
+          const todoErrorState = TodoStateStatus.errorState;
+          const todoInsertedState = TodoStateStatus.todoInserted;
+          const todoDeletedState = TodoStateStatus.todoDeleted;
+          const todoUpdatedState = TodoStateStatus.todoUpdated;
+          const todoUpdateMode = TodoStateStatus.todoUpdateMode;
+
+          switch (status) {
+            case todoInsertedState:
+              getSQLData();
+              break;
+
+            case todoDeletedState:
+              getSQLData();
+              break;
+
+            case todoUpdatedState:
+              getSQLData();
+              break;
+
+            case todoErrorState:
+              showSnackBarCustom(state.errorMessage);
+              break;
+
+            case todoUpdateMode:
+              Navigator.pushNamed(context, AppRoute.addTodoScreen);
+              break;
+
+            default:
+              break;
           }
         },
-        builder: (context, state) {
-          if (state is TodoFetchSuccess) {
-            return TodoCard(datas: state.datas);
-          } else if (state is TodoLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          return const SizedBox();
+        builder: (cxt, state) {
+          // final status = state.status;
+          // const todoFetch = TodoStateStatus.fetchedTodo;
+          // const todoLoading = TodoStateStatus.loading;
+
+          return TodoCard(
+            datas: state.datas,
+            cxt: cxt,
+          );
+
+          // switch (status) {
+          //   case todoFetch:
+          //     return TodoCard(
+          //       datas: state.datas,
+          //       cxt: cxt,
+          //     );
+
+          //   case todoLoading:
+          //     return const LoadingWidget();
+
+          //   default:
+          //     return const SizedBox();
+          // }
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: navigateToAddTodo,
+        onPressed: () => navigateToAddTodo(context),
         label: const Text('Add Todo'),
       ),
     );
   }
 
-  void navigateToAddTodo() {
+  void navigateToAddTodo(BuildContext context) {
+    final event = TodoAddModeEvent();
+    context.read<TodoBloc>().add(event);
     Navigator.pushNamed(context, AppRoute.addTodoScreen);
   }
 
@@ -66,5 +101,15 @@ class _HomeScreenState extends State<HomeScreen> {
     final event = TodoFetchEvent();
     final bloc = context.read<TodoBloc>();
     bloc.add(event);
+  }
+
+  void showSnackBarCustom(String message) {
+    final snackBar = SnackBar(
+      content: Text(
+        message,
+      ),
+      backgroundColor: Colors.red,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

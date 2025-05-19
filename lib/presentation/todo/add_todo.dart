@@ -6,17 +6,7 @@ import 'package:todo_app_sql/presentation/todo/bloc/todo_bloc.dart';
 import 'package:todo_app_sql/utils.dart';
 
 class AddTodoScreen extends StatefulWidget {
-  final int? id;
-  final String? title;
-  final String? description;
-  final bool isEditMode;
-  const AddTodoScreen({
-    super.key,
-    this.description,
-    this.id,
-    this.title,
-    this.isEditMode = false,
-  });
+  const AddTodoScreen({super.key});
 
   @override
   State<AddTodoScreen> createState() => _AddTodoScreenState();
@@ -29,84 +19,137 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
   @override
   void initState() {
     super.initState();
-    titleController.text = widget.title ?? '';
-    descriptionController.text = widget.description ?? '';
+    final todoBloc = BlocProvider.of<TodoBloc>(context, listen: false);
+    if (todoBloc.state.editMode) {
+      titleController.text = todoBloc.state.title;
+      descriptionController.text = todoBloc.state.descriptions;
+    } else {
+      titleController.text = "";
+      descriptionController.text = "";
+    }
   }
+
+  DateTime? selectedDate;
 
   @override
   Widget build(BuildContext context) {
+    final todoBloc = context.watch<TodoBloc>();
     return Scaffold(
       appBar: AppBar(
-        title: widget.isEditMode
+        title: todoBloc.state.editMode
             ? const Text('Edit Todo')
             : const Text('Add Todo'),
       ),
-      body: Form(
-        key: _globalKey,
-        child: ListView(
-          padding: const EdgeInsets.all(10),
-          children: [
-            TextFormField(
-              controller: titleController,
-              autofocus: true,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: (value) => validateField(
+      body: BlocConsumer<TodoBloc, TodoState>(
+        listener: (cxt, state) {
+          final status = state.status;
+          const todoUpdateMode = TodoStateStatus.todoUpdateMode;
+          if (status == todoUpdateMode) {
+            titleController.text = state.title;
+            descriptionController.text = state.descriptions;
+          }
+        },
+        builder: (cxt, state) {
+          return Form(
+            key: _globalKey,
+            child: ListView(
+              padding: const EdgeInsets.all(10),
+              children: [
+                TextFormField(
                   controller: titleController,
-                  errorMessage: 'Please enter title'),
-              decoration: InputDecoration(
-                labelText: 'Title',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  autofocus: true,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) => validateField(
+                      controller: titleController,
+                      errorMessage: 'Please enter title'),
+                  decoration: InputDecoration(
+                    labelText: 'Title',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 30),
-            TextFormField(
-              controller: descriptionController,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: (value) => validateField(
+                const SizedBox(height: 30),
+                TextFormField(
                   controller: descriptionController,
-                  errorMessage: 'Please enter description'),
-              keyboardType: TextInputType.multiline,
-              maxLines: 8,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) => validateField(
+                      controller: descriptionController,
+                      errorMessage: 'Please enter description'),
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 8,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    labelText: 'Description',
+                  ),
                 ),
-                labelText: 'Description',
-              ),
+                const SizedBox(height: 30),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    state.date == null
+                        ? 'Select Due Date'
+                        : 'Due Date: ${state.date}',
+                  ),
+                  trailing: const Icon(Icons.calendar_today),
+                  onTap: () async {
+                    final DateTime? picked = await showDatePicker(
+                      context: context,
+                      initialDate: selectedDate ?? DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100),
+                    );
+                    if (picked != null) {
+                      final event = TodoSelectDateEvent(dateTime: picked);
+                      cxt.read<TodoBloc>().add(event);
+                    }
+                  },
+                ),
+                const SizedBox(height: 30),
+                BlocBuilder<TodoBloc, TodoState>(builder: (cxt, state) {
+                  final blocProvider = BlocProvider.of<TodoBloc>(cxt);
+                  if (state.status == TodoStateStatus.loading) {
+                    return const Center(
+                      child: CircularProgressIndicator.adaptive(),
+                    );
+                  }
+                  return ElevatedButton(
+                    onPressed: () {
+                      _handleSubmit(blocProvider);
+                    },
+                    child: state.editMode
+                        ? const Text('Update')
+                        : const Text('Submit'),
+                  );
+                }),
+              ],
             ),
-            const SizedBox(height: 30),
-            BlocBuilder<TodoBloc, TodoState>(builder: (context, state) {
-              if (state is TodoLoading) {
-                return const Center(
-                  child: CircularProgressIndicator.adaptive(),
-                );
-              }
-              return ElevatedButton(
-                onPressed: _handleSubmit,
-                child: widget.isEditMode
-                    ? const Text('Update')
-                    : const Text('Submit'),
-              );
-            }),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  Future<void> _handleSubmit() async {
+  Future<void> _handleSubmit(TodoBloc blocProvider) async {
     final title = titleController.text;
+
     final description = descriptionController.text;
-    final values = TodoModel.toMap(title: title, descriptions: description);
 
     if (_globalKey.currentState?.validate() != true) return;
+    if (blocProvider.state.date == null) return;
+
+    final values = TodoModel.toMap(
+      title: title,
+      dateTime: blocProvider.state.date!,
+      descriptions: description,
+    );
 
     final bloc = context.read<TodoBloc>();
 
-    if (widget.isEditMode) {
-      final event = TodoUpdateEvent(id: widget.id!, values: values);
+    if (blocProvider.state.editMode) {
+      final event = TodoUpdateEvent(id: blocProvider.state.id, values: values);
 
       bloc.add(event);
 

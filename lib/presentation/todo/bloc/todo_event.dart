@@ -24,3 +24,17 @@ class TodoUpdateEvent extends TodoEvent {
     required this.values,
   });
 }
+
+class TodoUpdateButtonClickedEvent extends TodoEvent {
+  final TodoModel todo;
+  TodoUpdateButtonClickedEvent({
+    required this.todo,
+  });
+}
+
+class TodoSelectDateEvent extends TodoEvent {
+  final DateTime? dateTime;
+  TodoSelectDateEvent({required this.dateTime});
+}
+
+class TodoAddModeEvent extends TodoEvent {}

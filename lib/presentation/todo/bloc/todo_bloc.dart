@@ -11,10 +11,13 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
 
   TodoBloc({
     required this.todoRepository,
-  }) : super(TodoInitial()) {
+  }) : super(TodoState.initial()) {
     on<TodoFetchEvent>(_fetchData);
     on<TodoInsertEvent>(_insertData);
     on<TodoDeleteEvent>(_deleteData);
+    on<TodoUpdateButtonClickedEvent>(_onUpdateButtonClicked);
+    on<TodoAddModeEvent>(_todoAddMode);
+    on<TodoSelectDateEvent>(_todoSelectDate);
     on<TodoUpdateEvent>(_updateData);
   }
 // Fetch Data form database
@@ -22,13 +25,24 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     TodoFetchEvent event,
     Emitter<TodoState> emit,
   ) async {
-    emit(TodoLoading());
+    emit(
+      state.copyWith(status: TodoStateStatus.loading),
+    );
     try {
       final response = await todoRepository.getAllQuerry();
-
-      emit(TodoFetchSuccess(datas: response));
+      emit(
+        state.copyWith(
+          datas: response,
+          status: TodoStateStatus.fetchedTodo,
+        ),
+      );
     } catch (e) {
-      emit(TodoError(errorMessage: e.toString()));
+      emit(
+        state.copyWith(
+          status: TodoStateStatus.errorState,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -36,15 +50,22 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     TodoInsertEvent event,
     Emitter<TodoState> emit,
   ) async {
-    emit(TodoLoading());
+    emit(
+      state.copyWith(status: TodoStateStatus.loading),
+    );
     try {
       final response = await todoRepository.insertTodo(values: event.values);
 
       if (response == 1) {
-        emit(TodoDataInsertedState());
+        emit(
+          state.copyWith(status: TodoStateStatus.todoInserted),
+        );
       }
     } catch (e) {
-      emit(TodoError(errorMessage: e.toString()));
+      emit(
+        state.copyWith(
+            status: TodoStateStatus.errorState, errorMessage: e.toString()),
+      );
     }
   }
 
@@ -52,15 +73,20 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     TodoDeleteEvent event,
     Emitter<TodoState> emit,
   ) async {
-    emit(TodoLoading());
+    emit(
+      state.copyWith(status: TodoStateStatus.loading),
+    );
     try {
       final response = await todoRepository.deleteTodoById(id: event.id);
       if (response == 1) {
-        emit(TodoDataDeletedState());
+        emit(
+          state.copyWith(status: TodoStateStatus.todoDeleted),
+        );
       }
     } catch (e) {
       emit(
-        TodoError(
+        state.copyWith(
+          status: TodoStateStatus.errorState,
           errorMessage: e.toString(),
         ),
       );
@@ -71,17 +97,65 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     TodoUpdateEvent event,
     Emitter<TodoState> emit,
   ) async {
-    emit(TodoLoading());
+    emit(
+      state.copyWith(status: TodoStateStatus.loading),
+    );
     try {
       final response = await todoRepository.updateTodoById(
         id: event.id,
         values: event.values,
       );
       if (response == 1) {
-        emit(TodoDataUpdatedState());
+        emit(
+          state.copyWith(status: TodoStateStatus.todoUpdated),
+        );
       }
     } catch (e) {
-      emit(TodoError(errorMessage: e.toString()));
+      emit(
+        state.copyWith(
+          status: TodoStateStatus.errorState,
+          errorMessage: e.toString(),
+        ),
+      );
     }
+  }
+
+  Future<void> _onUpdateButtonClicked(
+    TodoUpdateButtonClickedEvent event,
+    Emitter<TodoState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        editMode: true,
+        id: event.todo.id,
+        title: event.todo.title,
+        descriptions: event.todo.description,
+        date: event.todo.dateTime,
+        status: TodoStateStatus.todoUpdateMode,
+      ),
+    );
+  }
+
+  Future<void> _todoSelectDate(
+    TodoSelectDateEvent event,
+    Emitter<TodoState> emit,
+  ) async {
+    emit(state.copyWith(
+      date: event.dateTime,
+    ));
+  }
+
+  void _todoAddMode(
+    TodoAddModeEvent event,
+    Emitter<TodoState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        title: "",
+        descriptions: "",
+        editMode: false,
+        date: null,
+      ),
+    );
   }
 }

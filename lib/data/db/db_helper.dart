@@ -29,6 +29,7 @@ class DBHelper {
           CREATE TABLE $table (
           id INTEGER PRIMARY KEY,
           title TEXT,
+          dateTime TEXT,
           description TEXT
           );
           ''',

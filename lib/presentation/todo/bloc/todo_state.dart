@@ -1,28 +1,74 @@
 part of 'todo_bloc.dart';
 
-abstract class TodoState {}
+enum TodoStateStatus {
+  intial,
+  loading,
+  errorState,
+  fetchedTodo,
+  todoInserted,
+  todoAddMode,
+  todoUpdateMode,
+  todoUpdated,
+  todoDeleted,
+}
 
-class TodoInitial extends TodoState {}
+class TodoState {
+  int id;
+  String title;
+  String descriptions;
+  DateTime? date;
+  bool editMode;
+  String errorMessage;
+  List<TodoModel> datas;
+  TodoStateStatus status;
 
-class TodoLoading extends TodoState {}
-
-class TodoError extends TodoState {
-  final String errorMessage;
-  TodoError({
+  TodoState({
+    required this.id,
+    required this.title,
+    required this.descriptions,
+    required this.date,
     required this.errorMessage,
-  });
-}
-
-class TodoFetchSuccess extends TodoState {
-  final List<TodoModel> datas;
-
-  TodoFetchSuccess({
     required this.datas,
+    this.editMode = false,
+    required this.status,
   });
+
+  factory TodoState.initial() {
+    return TodoState(
+      id: 0,
+      title: "",
+      descriptions: "",
+      date: null,
+      errorMessage: "",
+      datas: [],
+      status: TodoStateStatus.intial,
+    );
+  }
+
+  TodoState copyWith({
+    int? id,
+    String? title,
+    bool? editMode,
+    String? descriptions,
+    DateTime? date,
+    String? errorMessage,
+    List<TodoModel>? datas,
+    TodoStateStatus? status,
+  }) {
+    return TodoState(
+      id: id ?? this.id,
+      editMode: editMode ?? this.editMode,
+      title: title ?? this.title,
+      descriptions: descriptions ?? this.descriptions,
+      date: date,
+      errorMessage: errorMessage ?? this.errorMessage,
+      datas: datas ?? this.datas,
+      status: status ?? this.status,
+    );
+  }
+
+  @override
+  String toString() {
+    return "$status";
+  }
 }
-
-class TodoDataInsertedState extends TodoState {}
-
-class TodoDataUpdatedState extends TodoState {}
-
-class TodoDataDeletedState extends TodoState {}

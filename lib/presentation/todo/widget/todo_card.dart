@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app_sql/models/todo_model.dart';
-import 'package:todo_app_sql/presentation/todo/add_todo.dart';
 import 'package:todo_app_sql/presentation/todo/bloc/todo_bloc.dart';
 import 'package:todo_app_sql/utils.dart';
 
 class TodoCard extends StatefulWidget {
   final List<TodoModel> datas;
+  final BuildContext cxt;
 
   const TodoCard({
     super.key,
     required this.datas,
+    required this.cxt,
   });
 
   @override
@@ -45,11 +46,15 @@ class _TodoCardState extends State<TodoCard> {
               child: Text('${index + 1}'),
             ),
             title: Text(data.title),
-            subtitle: Text(data.description),
+            subtitle: Column(
+              children: [
+                Text(data.description),
+                Text("${data.dateTime}"),
+              ],
+            ),
             trailing: showMenuList(
-              id: data.id,
-              title: data.title,
-              description: data.description,
+              todo: data,
+              cxt: widget.cxt,
             ),
           ),
         );
@@ -58,16 +63,14 @@ class _TodoCardState extends State<TodoCard> {
   }
 
   Widget showMenuList({
-    required int id,
-    required String title,
-    required String description,
+    required TodoModel todo,
+    required BuildContext cxt,
   }) {
     return PopupMenuButton(
       onSelected: (value) => optionsSelected(
+        cxt: cxt,
+        todo: todo,
         value: value,
-        id: id,
-        title: title,
-        description: description,
       ),
       icon: const Icon(Icons.more_vert),
       itemBuilder: (context) {
@@ -83,25 +86,23 @@ class _TodoCardState extends State<TodoCard> {
 
   // method for selecting value
   Future<void> optionsSelected({
+    required TodoModel todo,
     required String value,
-    required int id,
-    required String title,
-    required String description,
+    required BuildContext cxt,
   }) async {
     if (value == 'Edit') {
-      final route = MaterialPageRoute(
-        builder: (context) => AddTodoScreen(
-          id: id,
-          title: title,
-          description: description,
-          isEditMode: true,
-        ),
+      final todoObject = TodoModel.todoObject(
+        id: todo.id,
+        title: todo.title,
+        description: todo.description,
+        dateTime: todo.dateTime,
       );
-      Navigator.push(context, route);
+      final event = TodoUpdateButtonClickedEvent(todo: todoObject);
+      context.read<TodoBloc>().add(event);
 
       // log('edit mode');
     } else if (value == 'Delete') {
-      final event = TodoDeleteEvent(id: id);
+      final event = TodoDeleteEvent(id: todo.id);
       final bloc = context.read<TodoBloc>();
       bloc.add(event);
       final snackBar = createdSnackBar(
