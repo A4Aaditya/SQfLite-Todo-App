@@ -1,9 +1,9 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:todo_app_sql/data/db/db_constant.dart';
 
 class DBHelper {
   static const _databaseName = 'todo.db';
-  static const table = 'todos';
 
   DBHelper._privateConstructor();
 
@@ -26,11 +26,11 @@ class DBHelper {
       onCreate: (db, version) {
         return db.execute(
           '''
-          CREATE TABLE $table (
-          id INTEGER PRIMARY KEY,
-          title TEXT,
-          dateTime TEXT,
-          description TEXT
+          CREATE TABLE ${DBConstant.todoTable} (
+          ${DBConstant.id} INTEGER PRIMARY KEY,
+          ${DBConstant.title} TEXT,
+          ${DBConstant.dateTime} TEXT,
+          ${DBConstant.description} TEXT
           );
           ''',
         );

@@ -1,3 +1,5 @@
+import 'package:todo_app_sql/data/db/db_constant.dart';
+
 class TodoModel {
   final int id;
   final String title;
@@ -12,12 +14,12 @@ class TodoModel {
   });
 
   factory TodoModel.fromMap(Map<String, dynamic> data) {
-    final parsedDateTime = DateTime.parse(data["dateTime"]);
+    final parsedDateTime = DateTime.parse(data[DBConstant.dateTime]);
     return TodoModel(
-      id: data['id'],
-      title: data['title'],
+      id: data[DBConstant.id],
+      title: data[DBConstant.title],
       dateTime: parsedDateTime,
-      description: data['description'],
+      description: data[DBConstant.description],
     );
   }
 
@@ -42,9 +44,9 @@ class TodoModel {
   }) {
     final convertedDate = dateTime.toIso8601String();
     return {
-      'title': title,
-      "dateTime": convertedDate,
-      'description': descriptions,
+      DBConstant.title: title,
+      DBConstant.dateTime: convertedDate,
+      DBConstant.description: descriptions,
     };
   }
 }
