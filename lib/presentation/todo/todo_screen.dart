@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const todoInsertedState = TodoStateStatus.todoInserted;
           const todoDeletedState = TodoStateStatus.todoDeleted;
           const todoUpdatedState = TodoStateStatus.todoUpdated;
-          const todoUpdateMode = TodoStateStatus.todoUpdateMode;
+          // const todoUpdateMode = TodoStateStatus.todoUpdateMode;
 
           switch (status) {
             case todoInsertedState:
@@ -50,37 +50,15 @@ class _HomeScreenState extends State<HomeScreen> {
               showSnackBarCustom(state.errorMessage);
               break;
 
-            case todoUpdateMode:
-              Navigator.pushNamed(context, AppRoute.addTodoScreen);
-              break;
-
             default:
               break;
           }
         },
         builder: (cxt, state) {
-          // final status = state.status;
-          // const todoFetch = TodoStateStatus.fetchedTodo;
-          // const todoLoading = TodoStateStatus.loading;
-
           return TodoCard(
             datas: state.datas,
             cxt: cxt,
           );
-
-          // switch (status) {
-          //   case todoFetch:
-          //     return TodoCard(
-          //       datas: state.datas,
-          //       cxt: cxt,
-          //     );
-
-          //   case todoLoading:
-          //     return const LoadingWidget();
-
-          //   default:
-          //     return const SizedBox();
-          // }
         },
       ),
       floatingActionButton: FloatingActionButton.extended(

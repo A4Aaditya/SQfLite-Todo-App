@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_app_sql/app_route.dart';
 import 'package:todo_app_sql/models/todo_model.dart';
 import 'package:todo_app_sql/presentation/todo/bloc/todo_bloc.dart';
 import 'package:todo_app_sql/utils.dart';
@@ -49,7 +50,7 @@ class _TodoCardState extends State<TodoCard> {
             subtitle: Column(
               children: [
                 Text(data.description),
-                Text("${data.dateTime}"),
+                Text(data.cateogory),
               ],
             ),
             trailing: showMenuList(
@@ -96,9 +97,12 @@ class _TodoCardState extends State<TodoCard> {
         title: todo.title,
         description: todo.description,
         dateTime: todo.dateTime,
+        cateogory: todo.cateogory,
       );
+
       final event = TodoUpdateButtonClickedEvent(todo: todoObject);
       context.read<TodoBloc>().add(event);
+      Navigator.pushNamed(context, AppRoute.addTodoScreen);
 
       // log('edit mode');
     } else if (value == 'Delete') {

@@ -38,3 +38,8 @@ class TodoSelectDateEvent extends TodoEvent {
 }
 
 class TodoAddModeEvent extends TodoEvent {}
+
+class TodoSelectCategoryEvent extends TodoEvent {
+  final String category;
+  TodoSelectCategoryEvent({required this.category});
+}

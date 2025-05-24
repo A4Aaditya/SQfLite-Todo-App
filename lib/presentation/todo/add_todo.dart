@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app_sql/app_route.dart';
 import 'package:todo_app_sql/models/todo_model.dart';
 import 'package:todo_app_sql/presentation/todo/bloc/todo_bloc.dart';
+import 'package:todo_app_sql/presentation/todo/widget/todo_dropdown_widget.dart';
 import 'package:todo_app_sql/utils.dart';
 
 class AddTodoScreen extends StatefulWidget {
@@ -29,8 +30,6 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
     }
   }
 
-  DateTime? selectedDate;
-
   @override
   Widget build(BuildContext context) {
     final todoBloc = context.watch<TodoBloc>();
@@ -42,9 +41,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
       ),
       body: BlocConsumer<TodoBloc, TodoState>(
         listener: (cxt, state) {
-          final status = state.status;
-          const todoUpdateMode = TodoStateStatus.todoUpdateMode;
-          if (status == todoUpdateMode) {
+          if (state.editMode) {
             titleController.text = state.title;
             descriptionController.text = state.descriptions;
           }
@@ -55,6 +52,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
             child: ListView(
               padding: const EdgeInsets.all(10),
               children: [
+                const AddTodoDropDownWidget(),
                 TextFormField(
                   controller: titleController,
                   autofocus: true,
@@ -97,7 +95,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                   onTap: () async {
                     final DateTime? picked = await showDatePicker(
                       context: context,
-                      initialDate: selectedDate ?? DateTime.now(),
+                      initialDate: DateTime.now(),
                       firstDate: DateTime(2000),
                       lastDate: DateTime(2100),
                     );
@@ -139,11 +137,13 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
 
     if (_globalKey.currentState?.validate() != true) return;
     if (blocProvider.state.date == null) return;
+    if (blocProvider.state.cateogory == null) return;
 
     final values = TodoModel.toMap(
       title: title,
       dateTime: blocProvider.state.date!,
       descriptions: description,
+      category: blocProvider.state.cateogory!,
     );
 
     final bloc = context.read<TodoBloc>();

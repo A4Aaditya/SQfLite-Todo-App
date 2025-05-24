@@ -6,8 +6,6 @@ enum TodoStateStatus {
   errorState,
   fetchedTodo,
   todoInserted,
-  todoAddMode,
-  todoUpdateMode,
   todoUpdated,
   todoDeleted,
 }
@@ -18,6 +16,7 @@ class TodoState {
   String descriptions;
   DateTime? date;
   bool editMode;
+  String? cateogory;
   String errorMessage;
   List<TodoModel> datas;
   TodoStateStatus status;
@@ -31,6 +30,7 @@ class TodoState {
     required this.datas,
     this.editMode = false,
     required this.status,
+    required this.cateogory,
   });
 
   factory TodoState.initial() {
@@ -42,6 +42,7 @@ class TodoState {
       errorMessage: "",
       datas: [],
       status: TodoStateStatus.intial,
+      cateogory: null,
     );
   }
 
@@ -51,6 +52,7 @@ class TodoState {
     bool? editMode,
     String? descriptions,
     DateTime? date,
+    String? cateogory,
     String? errorMessage,
     List<TodoModel>? datas,
     TodoStateStatus? status,
@@ -60,9 +62,10 @@ class TodoState {
       editMode: editMode ?? this.editMode,
       title: title ?? this.title,
       descriptions: descriptions ?? this.descriptions,
-      date: date,
+      date: date ?? this.date,
       errorMessage: errorMessage ?? this.errorMessage,
       datas: datas ?? this.datas,
+      cateogory: cateogory ?? this.cateogory,
       status: status ?? this.status,
     );
   }

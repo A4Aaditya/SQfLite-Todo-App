@@ -30,7 +30,8 @@ class DBHelper {
           ${DBConstant.id} INTEGER PRIMARY KEY,
           ${DBConstant.title} TEXT,
           ${DBConstant.dateTime} TEXT,
-          ${DBConstant.description} TEXT
+          ${DBConstant.description} TEXT,
+          ${DBConstant.category} TEXT
           );
           ''',
         );

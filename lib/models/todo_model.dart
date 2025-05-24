@@ -5,12 +5,14 @@ class TodoModel {
   final String title;
   final String description;
   final DateTime dateTime;
+  final String cateogory;
 
   TodoModel({
     required this.id,
     required this.title,
     required this.dateTime,
     required this.description,
+    required this.cateogory,
   });
 
   factory TodoModel.fromMap(Map<String, dynamic> data) {
@@ -20,6 +22,7 @@ class TodoModel {
       title: data[DBConstant.title],
       dateTime: parsedDateTime,
       description: data[DBConstant.description],
+      cateogory: data[DBConstant.category],
     );
   }
 
@@ -28,18 +31,21 @@ class TodoModel {
     required String title,
     required DateTime dateTime,
     required String description,
+    required String cateogory,
   }) {
     return TodoModel(
       id: id,
       title: title,
       dateTime: dateTime,
       description: description,
+      cateogory: cateogory,
     );
   }
 
   static Map<String, dynamic> toMap({
     required String title,
     required DateTime dateTime,
+    required String category,
     required String descriptions,
   }) {
     final convertedDate = dateTime.toIso8601String();
@@ -47,6 +53,7 @@ class TodoModel {
       DBConstant.title: title,
       DBConstant.dateTime: convertedDate,
       DBConstant.description: descriptions,
+      DBConstant.category: category,
     };
   }
 }
