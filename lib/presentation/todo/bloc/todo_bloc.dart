@@ -20,6 +20,8 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     on<TodoSelectDateEvent>(_todoSelectDate);
     on<TodoUpdateEvent>(_updateData);
     on<TodoSelectCategoryEvent>(_selectTodoCategory);
+    on<TodoTitleChangeEvent>(_todoTitleChange);
+    on<TodoDescriptionChangeEvent>(_todoDescriptionChange);
   }
 // Fetch Data form database
   FutureOr<void> _fetchData(
@@ -168,5 +170,23 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     emit(
       state.copyWith(cateogory: event.category),
     );
+  }
+
+  void _todoTitleChange(
+    TodoTitleChangeEvent event,
+    Emitter<TodoState> emit,
+  ) {
+    emit(state.copyWith(
+      title: event.title,
+    ));
+  }
+
+  void _todoDescriptionChange(
+    TodoDescriptionChangeEvent event,
+    Emitter<TodoState> emit,
+  ) {
+    emit(state.copyWith(
+      descriptions: event.description,
+    ));
   }
 }

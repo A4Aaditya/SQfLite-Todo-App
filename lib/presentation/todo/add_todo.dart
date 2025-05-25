@@ -58,8 +58,14 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                   autofocus: true,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) => validateField(
-                      controller: titleController,
-                      errorMessage: 'Please enter title'),
+                    controller: titleController,
+                    errorMessage: 'Please enter title',
+                  ),
+                  onChanged: (value) {
+                    final event =
+                        TodoTitleChangeEvent(title: titleController.text);
+                    cxt.read<TodoBloc>().add(event);
+                  },
                   decoration: InputDecoration(
                     labelText: 'Title',
                     border: OutlineInputBorder(
@@ -72,8 +78,14 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                   controller: descriptionController,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) => validateField(
-                      controller: descriptionController,
-                      errorMessage: 'Please enter description'),
+                    controller: descriptionController,
+                    errorMessage: 'Please enter description',
+                  ),
+                  onChanged: (value) {
+                    final event = TodoDescriptionChangeEvent(
+                        description: descriptionController.text);
+                    cxt.read<TodoBloc>().add(event);
+                  },
                   keyboardType: TextInputType.multiline,
                   maxLines: 8,
                   decoration: InputDecoration(

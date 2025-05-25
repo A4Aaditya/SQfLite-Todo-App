@@ -43,3 +43,13 @@ class TodoSelectCategoryEvent extends TodoEvent {
   final String category;
   TodoSelectCategoryEvent({required this.category});
 }
+
+class TodoTitleChangeEvent extends TodoEvent {
+  final String title;
+  TodoTitleChangeEvent({required this.title});
+}
+
+class TodoDescriptionChangeEvent extends TodoEvent {
+  final String description;
+  TodoDescriptionChangeEvent({required this.description});
+}
